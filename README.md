@@ -104,7 +104,7 @@ A modern, full-featured E-Commerce web application built with **Next.js 14 (App 
 ```bash
 npm run dev
 ```
-Open [[http://localhost:3000](https://ecomerceroute.vercel.app)](https://ecomerceroute.vercel.app)) in your browser.
+Open (https://ecomerceroute.vercel.app)](https://ecomerceroute.vercel.app)) in your browser.
 
 ### Production Build:
 ```bash
