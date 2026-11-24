@@ -33,10 +33,10 @@ export default function MainSlider() {
   ];
 
   return (
-    <section className="my-6">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <section className="my-3 sm:my-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4">
         {/* Main Swiper Slider (2 Columns on large screens) */}
-        <div className="lg:col-span-2 rounded-2xl overflow-hidden shadow-sm relative h-[280px] sm:h-[350px] lg:h-[420px]">
+        <div className="lg:col-span-2 rounded-2xl overflow-hidden shadow-sm relative h-[220px] sm:h-[320px] md:h-[380px] lg:h-[420px]">
           <Swiper
             modules={[Autoplay, Pagination]}
             autoplay={{ delay: 4000, disableOnInteraction: false }}
@@ -52,19 +52,19 @@ export default function MainSlider() {
                     alt={slide.title}
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/40 to-transparent flex flex-col justify-center px-8 sm:px-12 text-white">
-                    <span className="inline-block bg-primary text-white text-xs font-bold px-3 py-1 rounded-full w-max mb-3 uppercase tracking-wider">
+                  <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/45 to-transparent flex flex-col justify-center px-5 sm:px-10 lg:px-12 text-white">
+                    <span className="inline-block bg-primary text-white text-[10px] sm:text-xs font-bold px-2.5 py-0.5 sm:py-1 rounded-full w-max mb-1.5 sm:mb-3 uppercase tracking-wider">
                       Exclusive Deals
                     </span>
-                    <h2 className="text-2xl sm:text-4xl font-extrabold max-w-md leading-tight mb-2">
+                    <h2 className="text-xl sm:text-3xl lg:text-4xl font-extrabold max-w-sm sm:max-w-md leading-tight mb-1 sm:mb-2">
                       {slide.title}
                     </h2>
-                    <p className="text-sm sm:text-base text-gray-200 max-w-sm mb-6">
+                    <p className="text-xs sm:text-sm text-gray-200 max-w-xs sm:max-w-sm mb-3 sm:mb-6 line-clamp-2 sm:line-clamp-none">
                       {slide.subtitle}
                     </p>
                     <Link
                       href={slide.link}
-                      className="inline-flex items-center justify-center bg-primary hover:bg-routeGreenHover text-white font-semibold px-6 py-2.5 rounded-xl shadow-md w-max transition-all hover:scale-105"
+                      className="inline-flex items-center justify-center bg-primary hover:bg-routeGreenHover text-white text-xs sm:text-sm font-semibold px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl shadow-md w-max transition-all hover:scale-105 active:scale-95"
                     >
                       Shop Now
                     </Link>
@@ -75,19 +75,19 @@ export default function MainSlider() {
           </Swiper>
         </div>
 
-        {/* 2 Static Side Promo Banners (1 Column on large screens) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4 h-[280px] sm:h-auto lg:h-[420px]">
+        {/* 2 Static Side Promo Banners (Compact on mobile) */}
+        <div className="grid grid-cols-2 lg:grid-cols-1 gap-3 sm:gap-4 h-[130px] sm:h-[180px] lg:h-[420px]">
           <div className="relative rounded-2xl overflow-hidden shadow-sm group">
             <img
               src="https://images.unsplash.com/photo-1578916171728-46686eac8d58?auto=format&fit=crop&w=600&q=80"
               alt="Grocery Promo"
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-5 text-white">
-              <span className="text-xs font-bold text-primary uppercase">Super Saver</span>
-              <h3 className="text-lg font-bold">10% Cashback on Fresh Produce</h3>
-              <Link href="/products" className="text-xs font-semibold text-primary underline mt-1">
-                Explore items →
+            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent flex flex-col justify-end p-3 sm:p-5 text-white">
+              <span className="text-[10px] sm:text-xs font-bold text-primary uppercase">Super Saver</span>
+              <h3 className="text-xs sm:text-base font-bold line-clamp-1 sm:line-clamp-2">10% Cashback on Produce</h3>
+              <Link href="/products" className="text-[10px] sm:text-xs font-semibold text-primary underline mt-0.5">
+                Explore →
               </Link>
             </div>
           </div>
@@ -98,11 +98,11 @@ export default function MainSlider() {
               alt="Gadget Promo"
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-5 text-white">
-              <span className="text-xs font-bold text-amber-400 uppercase">Flash Deals</span>
-              <h3 className="text-lg font-bold">New Arrivals & Best Sellers</h3>
-              <Link href="/products" className="text-xs font-semibold text-amber-300 underline mt-1">
-                Shop Deals →
+            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent flex flex-col justify-end p-3 sm:p-5 text-white">
+              <span className="text-[10px] sm:text-xs font-bold text-amber-400 uppercase">Flash Deals</span>
+              <h3 className="text-xs sm:text-base font-bold line-clamp-1 sm:line-clamp-2">New Tech Arrivals</h3>
+              <Link href="/products" className="text-[10px] sm:text-xs font-semibold text-amber-300 underline mt-0.5">
+                Deals →
               </Link>
             </div>
           </div>

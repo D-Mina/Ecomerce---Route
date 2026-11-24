@@ -5,14 +5,11 @@ import { useRouter } from 'next/navigation';
 import api from '@/services/api';
 import { useCart } from '@/context/CartContext';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import LoadingSpinner from '@/components/LoadingSpinner';
 import { UserAddress } from '@/types';
 import { 
   CreditCard, 
   Banknote, 
   MapPin, 
-  Phone, 
-  Building, 
   ShieldCheck, 
   ArrowRight,
   CheckCircle2
@@ -21,7 +18,7 @@ import toast from 'react-hot-toast';
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { cart, cartId, totalCartPrice, numOfCartItems, clearCart } = useCart();
+  const { cart, cartId, totalCartPrice, numOfCartItems } = useCart();
 
   const [paymentMethod, setPaymentMethod] = useState<'cash' | 'card'>('cash');
   const [details, setDetails] = useState('');
@@ -35,7 +32,6 @@ export default function CheckoutPage() {
   const [selectedAddressId, setSelectedAddressId] = useState<string>('');
 
   useEffect(() => {
-    // Fetch user's saved addresses
     api.get('/api/v1/addresses')
       .then(({ data }) => {
         if (data.status === 'success' && Array.isArray(data.data)) {
@@ -82,20 +78,17 @@ export default function CheckoutPage() {
       };
 
       if (paymentMethod === 'cash') {
-        // Create cash order: POST /api/v1/orders/:cartId
         const { data } = await api.post(`/api/v1/orders/${cartId}`, {
           shippingAddress,
         });
 
         if (data.status === 'success') {
           toast.success('Cash order placed successfully! 🎉');
-          // Refresh cart state
           router.push('/allorders');
         } else {
           toast.error(data.message || 'Failed to place cash order');
         }
       } else {
-        // Online payment checkout session: POST /api/v1/orders/checkout-session/:cartId?url=...
         const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
         const { data } = await api.post(
           `/api/v1/orders/checkout-session/${cartId}?url=${baseUrl}`,
@@ -118,25 +111,25 @@ export default function CheckoutPage() {
 
   return (
     <ProtectedRoute>
-      <div className="pb-16 max-w-4xl mx-auto space-y-8">
+      <div className="pb-16 max-w-4xl mx-auto space-y-6 sm:space-y-8">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900">Checkout</h1>
+          <h1 className="text-xl sm:text-3xl font-extrabold text-gray-900">Checkout</h1>
           <p className="text-xs sm:text-sm text-gray-500">
             Select shipping address and payment method to complete your purchase
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
           {/* Left: Address & Payment options (7 cols) */}
-          <div className="lg:col-span-7 space-y-6">
+          <div className="lg:col-span-7 space-y-4 sm:space-y-6">
             {/* Saved Addresses Selector (if available) */}
             {savedAddresses.length > 0 && (
-              <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-3">
-                <h3 className="text-sm font-bold text-gray-800 flex items-center gap-2">
+              <div className="bg-white p-4 sm:p-6 rounded-2xl border border-gray-100 shadow-sm space-y-3">
+                <h3 className="text-xs sm:text-sm font-bold text-gray-800 flex items-center gap-2">
                   <MapPin className="w-4 h-4 text-primary" />
                   Select from Saved Addresses
                 </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
                   {savedAddresses.map((addr) => (
                     <div
                       key={addr._id}
@@ -162,8 +155,8 @@ export default function CheckoutPage() {
             )}
 
             {/* Shipping Address Inputs */}
-            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4">
-              <h3 className="text-base font-bold text-gray-900">Shipping Details</h3>
+            <div className="bg-white p-4 sm:p-6 rounded-2xl border border-gray-100 shadow-sm space-y-3 sm:space-y-4">
+              <h3 className="text-sm sm:text-base font-bold text-gray-900">Shipping Details</h3>
 
               <div className="space-y-3">
                 <div>
@@ -176,7 +169,7 @@ export default function CheckoutPage() {
                     value={details}
                     onChange={(e) => setDetails(e.target.value)}
                     placeholder="e.g. 15 El-Tahrir St, Apartment 4B"
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary"
                   />
                 </div>
 
@@ -191,7 +184,7 @@ export default function CheckoutPage() {
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="e.g. 01012345678"
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary"
                     />
                   </div>
 
@@ -205,7 +198,7 @@ export default function CheckoutPage() {
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
                       placeholder="e.g. Cairo, Giza, Alexandria"
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary"
                     />
                   </div>
                 </div>
@@ -219,50 +212,50 @@ export default function CheckoutPage() {
                     value={postalCode}
                     onChange={(e) => setPostalCode(e.target.value)}
                     placeholder="e.g. 11511"
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary"
                   />
                 </div>
               </div>
             </div>
 
             {/* Payment Method Selector */}
-            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4">
-              <h3 className="text-base font-bold text-gray-900">Choose Payment Method</h3>
+            <div className="bg-white p-4 sm:p-6 rounded-2xl border border-gray-100 shadow-sm space-y-3 sm:space-y-4">
+              <h3 className="text-sm sm:text-base font-bold text-gray-900">Choose Payment Method</h3>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 {/* Cash on Delivery */}
                 <div
                   onClick={() => setPaymentMethod('cash')}
-                  className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-center space-x-3 ${
+                  className={`p-3.5 sm:p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-center space-x-3 ${
                     paymentMethod === 'cash'
-                      ? 'border-primary bg-primary/5 text-gray-900'
+                      ? 'border-primary bg-primary/5 text-gray-900 ring-1 ring-primary/40'
                       : 'border-gray-200 hover:border-gray-300 text-gray-600'
                   }`}
                 >
-                  <div className="w-10 h-10 rounded-xl bg-emerald-100 text-primary flex items-center justify-center flex-shrink-0">
+                  <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-100 text-primary flex items-center justify-center flex-shrink-0">
                     <Banknote className="w-5 h-5" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-sm">Cash on Delivery</h4>
-                    <p className="text-[11px] text-gray-500">Pay cash upon delivery</p>
+                    <h4 className="font-bold text-xs sm:text-sm">Cash on Delivery</h4>
+                    <p className="text-[10px] sm:text-[11px] text-gray-500">Pay cash upon delivery</p>
                   </div>
                 </div>
 
                 {/* Online Payment (Card) */}
                 <div
                   onClick={() => setPaymentMethod('card')}
-                  className={`p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-center space-x-3 ${
+                  className={`p-3.5 sm:p-4 rounded-2xl border-2 cursor-pointer transition-all flex items-center space-x-3 ${
                     paymentMethod === 'card'
-                      ? 'border-primary bg-primary/5 text-gray-900'
+                      ? 'border-primary bg-primary/5 text-gray-900 ring-1 ring-primary/40'
                       : 'border-gray-200 hover:border-gray-300 text-gray-600'
                   }`}
                 >
-                  <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0">
+                  <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0">
                     <CreditCard className="w-5 h-5" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-sm">Online Payment</h4>
-                    <p className="text-[11px] text-gray-500">Visa / Mastercard / Stripe</p>
+                    <h4 className="font-bold text-xs sm:text-sm">Online Payment</h4>
+                    <p className="text-[10px] sm:text-[11px] text-gray-500">Visa / Mastercard / Stripe</p>
                   </div>
                 </div>
               </div>
@@ -270,11 +263,11 @@ export default function CheckoutPage() {
           </div>
 
           {/* Right: Order Summary (5 cols) */}
-          <div className="lg:col-span-5 space-y-6">
-            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4 sticky top-24">
-              <h3 className="text-lg font-bold text-gray-900">Order Summary</h3>
+          <div className="lg:col-span-5 space-y-4 sm:space-y-6">
+            <div className="bg-white p-4 sm:p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4 sticky top-20">
+              <h3 className="text-base sm:text-lg font-bold text-gray-900">Order Summary</h3>
 
-              <div className="space-y-3 text-sm border-b border-gray-100 pb-4">
+              <div className="space-y-2.5 text-xs sm:text-sm border-b border-gray-100 pb-3">
                 <div className="flex justify-between text-gray-600">
                   <span>Items count:</span>
                   <span className="font-semibold text-gray-900">{numOfCartItems} items</span>
@@ -285,15 +278,15 @@ export default function CheckoutPage() {
                 </div>
                 <div className="flex justify-between text-gray-600">
                   <span>Selected Payment:</span>
-                  <span className="font-semibold text-gray-900 uppercase text-xs bg-gray-100 px-2 py-0.5 rounded">
+                  <span className="font-semibold text-gray-900 uppercase text-[11px] bg-gray-100 px-2 py-0.5 rounded">
                     {paymentMethod === 'cash' ? 'Cash on Delivery' : 'Online Card'}
                   </span>
                 </div>
               </div>
 
               <div className="flex justify-between items-baseline pt-1">
-                <span className="text-base font-bold text-gray-900">Total to Pay</span>
-                <span className="text-2xl font-black text-primary">
+                <span className="text-sm sm:text-base font-bold text-gray-900">Total to Pay</span>
+                <span className="text-xl sm:text-2xl font-black text-primary">
                   {totalCartPrice} EGP
                 </span>
               </div>
@@ -301,7 +294,7 @@ export default function CheckoutPage() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-3.5 px-4 bg-primary hover:bg-routeGreenHover text-white rounded-xl text-sm font-bold flex items-center justify-center space-x-2 shadow-md shadow-primary/20 hover:shadow-lg transition-all"
+                className="w-full py-3 sm:py-3.5 px-4 bg-primary hover:bg-routeGreenHover text-white rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center space-x-2 shadow-md shadow-primary/20 hover:shadow-lg transition-all"
               >
                 {submitting ? (
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -313,8 +306,8 @@ export default function CheckoutPage() {
                 )}
               </button>
 
-              <div className="flex items-center justify-center space-x-1.5 text-[11px] text-gray-400 pt-2">
-                <ShieldCheck className="w-4 h-4 text-emerald-500" />
+              <div className="flex items-center justify-center space-x-1.5 text-[10px] sm:text-[11px] text-gray-400 pt-1">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
                 <span>Encrypted & secure checkout process</span>
               </div>
             </div>

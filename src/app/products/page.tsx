@@ -5,7 +5,7 @@ import api from '@/services/api';
 import { Product, Category, Brand } from '@/types';
 import ProductCard from '@/components/ProductCard';
 import LoadingSpinner from '@/components/LoadingSpinner';
-import { Search, Filter, SlidersHorizontal, X } from 'lucide-react';
+import { Search, SlidersHorizontal, X, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -21,7 +21,6 @@ export default function ProductsPage() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  // Fetch categories and brands for filter bars
   useEffect(() => {
     Promise.all([
       api.get('/api/v1/categories'),
@@ -70,11 +69,11 @@ export default function ProductsPage() {
   };
 
   return (
-    <div className="space-y-6 pb-12">
+    <div className="space-y-4 sm:space-y-6 pb-12">
       {/* Header & Search */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4 bg-white p-4 sm:p-6 rounded-2xl border border-gray-100 shadow-sm">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">All Products</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">All Products</h1>
           <p className="text-xs sm:text-sm text-gray-500">
             Browse our full catalog with advanced filters & fast delivery
           </p>
@@ -91,7 +90,7 @@ export default function ProductsPage() {
               setPage(1);
             }}
             placeholder="Search products..."
-            className="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary bg-gray-50"
+            className="w-full pl-9 pr-4 py-2 sm:py-2.5 text-xs sm:text-sm rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary bg-gray-50"
           />
           {keyword && (
             <button
@@ -105,11 +104,12 @@ export default function ProductsPage() {
       </div>
 
       {/* Filter controls row */}
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-4 rounded-xl border border-gray-100 shadow-sm text-xs sm:text-sm">
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="flex items-center space-x-1.5 text-gray-500 font-medium mr-2">
-            <SlidersHorizontal className="w-4 h-4" />
-            <span>Filter By:</span>
+      <div className="bg-white p-3 sm:p-4 rounded-xl border border-gray-100 shadow-sm text-xs sm:text-sm space-y-3 md:space-y-0 md:flex md:flex-wrap md:items-center md:justify-between gap-3">
+        {/* Filters */}
+        <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2">
+          <div className="col-span-2 sm:col-auto flex items-center space-x-1.5 text-gray-500 font-semibold mr-1">
+            <SlidersHorizontal className="w-4 h-4 text-primary" />
+            <span>Filter:</span>
           </div>
 
           {/* Category Filter */}
@@ -119,7 +119,7 @@ export default function ProductsPage() {
               setSelectedCategory(e.target.value);
               setPage(1);
             }}
-            className="px-3 py-1.5 rounded-lg border border-gray-200 bg-gray-50 text-gray-700 font-medium focus:outline-none focus:ring-1 focus:ring-primary"
+            className="w-full sm:w-auto px-2.5 py-2 rounded-lg border border-gray-200 bg-gray-50 text-gray-700 text-xs sm:text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary"
           >
             <option value="">All Categories</option>
             {categories.map((c) => (
@@ -136,7 +136,7 @@ export default function ProductsPage() {
               setSelectedBrand(e.target.value);
               setPage(1);
             }}
-            className="px-3 py-1.5 rounded-lg border border-gray-200 bg-gray-50 text-gray-700 font-medium focus:outline-none focus:ring-1 focus:ring-primary"
+            className="w-full sm:w-auto px-2.5 py-2 rounded-lg border border-gray-200 bg-gray-50 text-gray-700 text-xs sm:text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary"
           >
             <option value="">All Brands</option>
             {brands.map((b) => (
@@ -149,16 +149,16 @@ export default function ProductsPage() {
           {(selectedCategory || selectedBrand || keyword || sort) && (
             <button
               onClick={clearFilters}
-              className="flex items-center space-x-1 text-red-600 hover:text-red-700 px-2.5 py-1.5 rounded-lg hover:bg-red-50 font-medium transition-colors"
+              className="col-span-2 sm:col-auto flex items-center justify-center space-x-1 text-red-600 hover:text-red-700 px-3 py-1.5 rounded-lg bg-red-50 font-semibold transition-colors"
             >
               <X className="w-3.5 h-3.5" />
-              <span>Reset</span>
+              <span>Reset Filters</span>
             </button>
           )}
         </div>
 
         {/* Sort Select */}
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center justify-between sm:justify-start space-x-2 pt-2 md:pt-0 border-t md:border-t-0 border-gray-100">
           <span className="text-gray-500 font-medium">Sort by:</span>
           <select
             value={sort}
@@ -166,7 +166,7 @@ export default function ProductsPage() {
               setSort(e.target.value);
               setPage(1);
             }}
-            className="px-3 py-1.5 rounded-lg border border-gray-200 bg-gray-50 text-gray-700 font-medium focus:outline-none focus:ring-1 focus:ring-primary"
+            className="px-3 py-1.5 sm:py-2 rounded-lg border border-gray-200 bg-gray-50 text-gray-700 text-xs sm:text-sm font-medium focus:outline-none focus:ring-1 focus:ring-primary"
           >
             <option value="">Default</option>
             <option value="-price">Price: High to Low</option>
@@ -181,9 +181,9 @@ export default function ProductsPage() {
       {loading ? (
         <LoadingSpinner fullScreen text="Loading fresh products..." />
       ) : products.length === 0 ? (
-        <div className="text-center py-20 bg-white rounded-2xl border border-gray-100">
-          <p className="text-lg font-bold text-gray-800 mb-2">No products found</p>
-          <p className="text-sm text-gray-500 mb-4">Try adjusting your filters or search keywords.</p>
+        <div className="text-center py-16 sm:py-20 bg-white rounded-2xl border border-gray-100 p-4">
+          <p className="text-base sm:text-lg font-bold text-gray-800 mb-2">No products found</p>
+          <p className="text-xs sm:text-sm text-gray-500 mb-4">Try adjusting your filters or search keywords.</p>
           <button
             onClick={clearFilters}
             className="px-4 py-2 bg-primary text-white text-xs font-semibold rounded-lg hover:bg-routeGreenHover shadow-sm"
@@ -193,13 +193,13 @@ export default function ProductsPage() {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2.5 sm:gap-4 md:gap-6">
             {products.map((product) => (
               <ProductCard key={product._id} product={product} />
             ))}
           </div>
 
-          {/* Pagination */}
+          {/* Responsive Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-center space-x-2 pt-8">
               <button
@@ -208,13 +208,29 @@ export default function ProductsPage() {
                   setPage((p) => p - 1);
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
-                className="px-4 py-2 rounded-lg border border-gray-200 text-xs sm:text-sm font-semibold disabled:opacity-40 hover:bg-gray-50 transition-colors"
+                className="flex items-center space-x-1 px-3 py-2 rounded-lg border border-gray-200 text-xs sm:text-sm font-semibold disabled:opacity-40 hover:bg-gray-50 transition-colors"
               >
-                Previous
+                <ChevronLeft className="w-4 h-4" />
+                <span className="hidden sm:inline">Previous</span>
               </button>
-              <div className="flex items-center space-x-1">
+
+              {/* Mobile page indicator */}
+              <div className="sm:hidden px-3 py-2 text-xs font-bold bg-white border border-gray-200 rounded-lg">
+                Page {page} of {totalPages}
+              </div>
+
+              {/* Desktop page buttons */}
+              <div className="hidden sm:flex items-center space-x-1">
                 {Array.from({ length: totalPages }).map((_, i) => {
                   const pNum = i + 1;
+                  // If lots of pages, show window
+                  if (totalPages > 8 && Math.abs(page - pNum) > 2 && pNum !== 1 && pNum !== totalPages) {
+                    if (Math.abs(page - pNum) === 3) {
+                      return <span key={pNum} className="px-1 text-gray-400">...</span>;
+                    }
+                    return null;
+                  }
+
                   return (
                     <button
                       key={pNum}
@@ -233,15 +249,17 @@ export default function ProductsPage() {
                   );
                 })}
               </div>
+
               <button
                 disabled={page >= totalPages}
                 onClick={() => {
                   setPage((p) => p + 1);
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
-                className="px-4 py-2 rounded-lg border border-gray-200 text-xs sm:text-sm font-semibold disabled:opacity-40 hover:bg-gray-50 transition-colors"
+                className="flex items-center space-x-1 px-3 py-2 rounded-lg border border-gray-200 text-xs sm:text-sm font-semibold disabled:opacity-40 hover:bg-gray-50 transition-colors"
               >
-                Next
+                <span className="hidden sm:inline">Next</span>
+                <ChevronRight className="w-4 h-4" />
               </button>
             </div>
           )}

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
@@ -26,6 +26,11 @@ export default function Navbar() {
   const { count: wishlistCount } = useWishlist();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
 
   const navLinks = [
     { name: 'Home', href: '/' },
@@ -59,15 +64,15 @@ export default function Navbar() {
       </div>
 
       {/* Main Navbar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo & Desktop Nav Links */}
-          <div className="flex items-center space-x-8">
-            <Link href="/" className="flex items-center space-x-2 text-2xl font-bold tracking-tight text-gray-900 group">
-              <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-white shadow-md shadow-primary/20 group-hover:scale-105 transition-transform">
-                <ShoppingCart className="w-5 h-5" />
+          <div className="flex items-center space-x-4 lg:space-x-8">
+            <Link href="/" className="flex items-center space-x-2 text-xl sm:text-2xl font-bold tracking-tight text-gray-900 group">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-primary flex items-center justify-center text-white shadow-md shadow-primary/20 group-hover:scale-105 transition-transform flex-shrink-0">
+                <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
-              <span className="font-extrabold text-xl tracking-tight text-gray-900">
+              <span className="font-extrabold text-lg sm:text-xl tracking-tight text-gray-900">
                 fresh<span className="text-primary font-black">cart</span>
               </span>
             </Link>
@@ -91,7 +96,7 @@ export default function Navbar() {
           </div>
 
           {/* Right Action Icons & Auth */}
-          <div className="flex items-center space-x-2 sm:space-x-4">
+          <div className="flex items-center space-x-1.5 sm:space-x-3">
             {/* Wishlist Link with Badge */}
             <Link
               href="/wishlist"
@@ -100,7 +105,7 @@ export default function Navbar() {
             >
               <Heart className={`w-5 h-5 ${wishlistCount > 0 ? 'text-red-500 fill-red-500' : ''}`} />
               {wishlistCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full h-5 min-w-[20px] px-1 flex items-center justify-center animate-pulse">
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full h-4 sm:h-5 min-w-[16px] sm:min-w-[20px] px-1 flex items-center justify-center shadow-sm">
                   {wishlistCount}
                 </span>
               )}
@@ -114,15 +119,15 @@ export default function Navbar() {
             >
               <ShoppingCart className="w-5 h-5" />
               {numOfCartItems > 0 && (
-                <span className="absolute -top-1 -right-1 bg-primary text-white text-[10px] font-bold rounded-full h-5 min-w-[20px] px-1 flex items-center justify-center shadow-sm">
+                <span className="absolute -top-1 -right-1 bg-primary text-white text-[10px] font-bold rounded-full h-4 sm:h-5 min-w-[16px] sm:min-w-[20px] px-1 flex items-center justify-center shadow-sm">
                   {numOfCartItems}
                 </span>
               )}
             </Link>
 
-            {/* User Dropdown or Login / Register */}
+            {/* User Dropdown or Login / Register (Desktop) */}
             {isAuthenticated ? (
-              <div className="relative">
+              <div className="relative hidden sm:block">
                 <button
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
                   className="flex items-center space-x-2 p-1.5 rounded-lg border border-gray-200 hover:border-primary text-gray-700 hover:bg-gray-50 transition-all text-sm font-medium"
@@ -130,7 +135,7 @@ export default function Navbar() {
                   <div className="w-7 h-7 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-xs uppercase">
                     {user?.name ? user.name[0] : 'U'}
                   </div>
-                  <span className="hidden sm:inline-block max-w-[100px] truncate">{user?.name?.split(' ')[0]}</span>
+                  <span className="max-w-[100px] truncate">{user?.name?.split(' ')[0]}</span>
                   <ChevronDown className="w-4 h-4 text-gray-400" />
                 </button>
 
@@ -191,7 +196,7 @@ export default function Navbar() {
                 )}
               </div>
             ) : (
-              <div className="flex items-center space-x-2">
+              <div className="hidden sm:flex items-center space-x-2">
                 <Link
                   href="/login"
                   className="px-3 py-1.5 text-sm font-semibold text-gray-700 hover:text-primary transition-colors"
@@ -207,12 +212,13 @@ export default function Navbar() {
               </div>
             )}
 
-            {/* Mobile menu trigger */}
+            {/* Mobile menu trigger button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="md:hidden p-2 text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-100"
+              aria-label="Toggle Navigation Menu"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? <X className="w-6 h-6 text-gray-900" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
@@ -220,37 +226,46 @@ export default function Navbar() {
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-gray-200 bg-white px-4 pt-3 pb-6 space-y-2">
-          {navLinks.map((link) => (
-            <Link
-              key={link.name}
-              href={link.href}
-              onClick={() => setMobileMenuOpen(false)}
-              className={`block px-3 py-2 rounded-lg text-base font-medium ${
-                isActive(link.href)
-                  ? 'text-primary bg-primary/10 font-semibold'
-                  : 'text-gray-700 hover:bg-gray-50'
-              }`}
-            >
-              {link.name}
-            </Link>
-          ))}
+        <div className="md:hidden border-t border-gray-200 bg-white/98 backdrop-blur-md px-4 pt-3 pb-6 space-y-3 shadow-lg animate-in slide-in-from-top-3 duration-200">
+          <div className="space-y-1">
+            {navLinks.map((link) => (
+              <Link
+                key={link.name}
+                href={link.href}
+                onClick={() => setMobileMenuOpen(false)}
+                className={`block px-3 py-2.5 rounded-xl text-base font-medium transition-colors ${
+                  isActive(link.href)
+                    ? 'text-primary bg-primary/10 font-bold'
+                    : 'text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                {link.name}
+              </Link>
+            ))}
+          </div>
+
           {isAuthenticated ? (
-            <div className="pt-4 border-t border-gray-100 space-y-2">
+            <div className="pt-3 border-t border-gray-100 space-y-1">
+              <div className="px-3 py-2 mb-1 bg-gray-50 rounded-xl">
+                <p className="text-xs text-gray-400 font-medium">Logged in as</p>
+                <p className="text-sm font-bold text-gray-900 truncate">{user?.name}</p>
+                <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+              </div>
+
               <Link
                 href="/profile"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center space-x-2 px-3 py-2 text-base text-gray-700 hover:bg-gray-50"
+                className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg"
               >
-                <User className="w-5 h-5 text-gray-400" />
+                <ShieldCheck className="w-4 h-4 text-gray-400" />
                 <span>Profile & Password</span>
               </Link>
               <Link
                 href="/addresses"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center space-x-2 px-3 py-2 text-base text-gray-700 hover:bg-gray-50"
+                className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg"
               >
-                <MapPin className="w-5 h-5 text-gray-400" />
+                <MapPin className="w-4 h-4 text-gray-400" />
                 <span>Saved Addresses</span>
               </Link>
               <button
@@ -258,27 +273,27 @@ export default function Navbar() {
                   setMobileMenuOpen(false);
                   logout();
                 }}
-                className="w-full flex items-center space-x-2 px-3 py-2 text-base text-red-600 hover:bg-red-50 rounded-lg"
+                className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg"
               >
-                <LogOut className="w-5 h-5" />
+                <LogOut className="w-4 h-4" />
                 <span>Sign Out</span>
               </button>
             </div>
           ) : (
-            <div className="pt-4 border-t border-gray-100 flex flex-col space-y-2">
+            <div className="pt-3 border-t border-gray-100 flex flex-col space-y-2">
               <Link
                 href="/login"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full text-center py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium"
+                className="w-full text-center py-2.5 rounded-xl border border-gray-300 text-gray-700 font-semibold text-sm"
               >
                 Sign In
               </Link>
               <Link
                 href="/register"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full text-center py-2.5 rounded-lg bg-primary text-white font-medium shadow-sm"
+                className="w-full text-center py-2.5 rounded-xl bg-primary text-white font-semibold text-sm shadow-sm"
               >
-                Register
+                Create Account
               </Link>
             </div>
           )}

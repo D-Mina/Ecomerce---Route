@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { AuthProvider } from '@/context/AuthContext';
 import { CartProvider } from '@/context/CartContext';
@@ -15,6 +15,12 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+};
+
 export default function RootLayout({
   children,
 }: {
@@ -22,7 +28,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="min-h-screen flex flex-col bg-slate-50 text-slate-800 antialiased">
+      <body className="min-h-screen flex flex-col bg-slate-50 text-slate-800 antialiased overflow-x-hidden selection:bg-emerald-100 selection:text-emerald-900">
         <AuthProvider>
           <CartProvider>
             <WishlistProvider>
@@ -35,6 +41,7 @@ export default function RootLayout({
                     color: '#fff',
                     borderRadius: '12px',
                     fontSize: '13px',
+                    maxWidth: '90vw',
                   },
                   success: {
                     iconTheme: {
@@ -45,7 +52,7 @@ export default function RootLayout({
                 }}
               />
               <Navbar />
-              <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+              <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
                 {children}
               </main>
               <Footer />

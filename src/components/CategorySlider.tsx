@@ -17,18 +17,18 @@ export default function CategorySlider({ categories }: CategorySliderProps) {
   if (!categories || categories.length === 0) return null;
 
   return (
-    <section className="my-10">
-      <div className="flex items-center justify-between mb-4">
+    <section className="my-6 sm:my-10">
+      <div className="flex items-center justify-between mb-3 sm:mb-4">
         <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <Layers className="w-6 h-6 text-primary" />
-            Shop Popular Categories
+          <h2 className="text-lg sm:text-2xl font-bold text-gray-900 flex items-center gap-1.5 sm:gap-2">
+            <Layers className="w-5 h-5 sm:w-6 sm:h-6 text-primary flex-shrink-0" />
+            <span>Popular Categories</span>
           </h2>
-          <p className="text-xs sm:text-sm text-gray-500">Explore top items by category</p>
+          <p className="text-[11px] sm:text-sm text-gray-500">Explore top items by category</p>
         </div>
         <Link
           href="/categories"
-          className="text-sm font-semibold text-primary hover:text-routeGreenHover hover:underline"
+          className="text-xs sm:text-sm font-semibold text-primary hover:text-routeGreenHover hover:underline"
         >
           View All →
         </Link>
@@ -38,16 +38,17 @@ export default function CategorySlider({ categories }: CategorySliderProps) {
         <Swiper
           modules={[Autoplay, Navigation]}
           autoplay={{ delay: 3500, disableOnInteraction: false }}
-          spaceBetween={16}
-          slidesPerView={2}
+          spaceBetween={12}
+          slidesPerView={2.3}
           breakpoints={{
-            480: { slidesPerView: 3, spaceBetween: 16 },
-            640: { slidesPerView: 4, spaceBetween: 16 },
-            768: { slidesPerView: 5, spaceBetween: 20 },
+            400: { slidesPerView: 2.7, spaceBetween: 12 },
+            480: { slidesPerView: 3.2, spaceBetween: 14 },
+            640: { slidesPerView: 4.2, spaceBetween: 16 },
+            768: { slidesPerView: 5, spaceBetween: 18 },
             1024: { slidesPerView: 6, spaceBetween: 20 },
             1280: { slidesPerView: 7, spaceBetween: 24 },
           }}
-          className="py-2"
+          className="py-1 sm:py-2"
         >
           {categories.map((cat) => (
             <SwiperSlide key={cat._id}>
@@ -64,7 +65,7 @@ export default function CategorySlider({ categories }: CategorySliderProps) {
                   />
                   <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors" />
                 </div>
-                <h4 className="mt-2.5 text-xs sm:text-sm font-semibold text-gray-800 group-hover:text-primary transition-colors truncate">
+                <h4 className="mt-1.5 sm:mt-2.5 text-xs sm:text-sm font-semibold text-gray-800 group-hover:text-primary transition-colors truncate px-1">
                   {cat.name}
                 </h4>
               </Link>
