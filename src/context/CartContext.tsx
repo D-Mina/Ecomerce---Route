@@ -32,6 +32,27 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
 
+  const fetchPopulatedCart = useCallback(async () => {
+    if (!token) return null;
+    try {
+      const { data } = await api.get('/api/v1/cart');
+      if (data.status === 'success') {
+        setCart(data.data);
+        setCartId(data.data?._id || data.cartId);
+        setNumOfCartItems(data.numOfCartItems || 0);
+        setTotalCartPrice(data.data?.totalCartPrice || 0);
+        return data.data;
+      }
+    } catch (error: any) {
+      if (error.response?.status === 404) {
+        setCart(null);
+        setNumOfCartItems(0);
+        setTotalCartPrice(0);
+      }
+    }
+    return null;
+  }, [token]);
+
   const getCart = useCallback(async () => {
     if (!token) {
       setCart(null);
@@ -43,23 +64,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
     try {
       setLoading(true);
-      const { data } = await api.get('/api/v1/cart');
-      if (data.status === 'success') {
-        setCart(data.data);
-        setCartId(data.data?._id || data.cartId);
-        setNumOfCartItems(data.numOfCartItems || 0);
-        setTotalCartPrice(data.data?.totalCartPrice || 0);
-      }
-    } catch (error: any) {
-      if (error.response?.status === 404) {
-        setCart(null);
-        setNumOfCartItems(0);
-        setTotalCartPrice(0);
-      }
+      await fetchPopulatedCart();
     } finally {
       setLoading(false);
     }
-  }, [token]);
+  }, [token, fetchPopulatedCart]);
 
   useEffect(() => {
     getCart();
@@ -75,10 +84,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       setActionLoading(true);
       const { data } = await api.post('/api/v1/cart', { productId });
       if (data.status === 'success') {
-        setCart(data.data);
-        setCartId(data.cartId || data.data?._id);
         setNumOfCartItems(data.numOfCartItems || 0);
-        setTotalCartPrice(data.data?.totalCartPrice || 0);
+        // Route API returns unpopulated product ids in data.data for POST /api/v1/cart.
+        // Fetch the populated cart so all product details (images, titles, category) appear immediately.
+        await fetchPopulatedCart();
         toast.success(data.message || 'Product added to cart!');
         return true;
       }
@@ -100,9 +109,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       setActionLoading(true);
       const { data } = await api.put(`/api/v1/cart/${productId}`, { count });
       if (data.status === 'success') {
-        setCart(data.data);
-        setNumOfCartItems(data.numOfCartItems || 0);
-        setTotalCartPrice(data.data?.totalCartPrice || 0);
+        const firstProd = data.data?.products?.[0]?.product;
+        if (firstProd && typeof firstProd === 'object') {
+          setCart(data.data);
+          setNumOfCartItems(data.numOfCartItems || 0);
+          setTotalCartPrice(data.data?.totalCartPrice || 0);
+        } else {
+          await fetchPopulatedCart();
+        }
         toast.success('Cart updated');
         return true;
       }
@@ -120,9 +134,20 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       setActionLoading(true);
       const { data } = await api.delete(`/api/v1/cart/${productId}`);
       if (data.status === 'success') {
-        setCart(data.data);
-        setNumOfCartItems(data.numOfCartItems || 0);
-        setTotalCartPrice(data.data?.totalCartPrice || 0);
+        if (!data.data?.products || data.data.products.length === 0) {
+          setCart(data.data);
+          setNumOfCartItems(0);
+          setTotalCartPrice(0);
+        } else {
+          const firstProd = data.data?.products?.[0]?.product;
+          if (firstProd && typeof firstProd === 'object') {
+            setCart(data.data);
+            setNumOfCartItems(data.numOfCartItems || 0);
+            setTotalCartPrice(data.data?.totalCartPrice || 0);
+          } else {
+            await fetchPopulatedCart();
+          }
+        }
         toast.success('Item removed from cart');
         return true;
       }
@@ -160,8 +185,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       setActionLoading(true);
       const { data } = await api.put('/api/v2/cart/applyCoupon', { couponName });
       if (data.status === 'success') {
-        setCart(data.data);
-        setTotalCartPrice(data.data?.totalCartPrice || data.data?.totalAfterDiscount);
+        const firstProd = data.data?.products?.[0]?.product;
+        if (firstProd && typeof firstProd === 'object') {
+          setCart(data.data);
+          setTotalCartPrice(data.data?.totalCartPrice || data.data?.totalAfterDiscount);
+        } else {
+          await fetchPopulatedCart();
+        }
         toast.success('Coupon applied successfully!');
         return { success: true };
       }

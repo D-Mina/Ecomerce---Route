@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
 import ProtectedRoute from '@/components/ProtectedRoute';
@@ -26,8 +26,19 @@ export default function CartPage() {
     updateProductQuantity, 
     removeCartItem, 
     clearCart,
-    applyCoupon 
+    applyCoupon,
+    getCart
   } = useCart();
+
+  useEffect(() => {
+    // If cart has unpopulated items (e.g. from an add/update where product is only an ID string or missing details)
+    const hasUnpopulated = cart?.products?.some(
+      (item: any) => typeof item.product !== 'object' || !item.product?.imageCover || !item.product?.title
+    );
+    if (!cart || hasUnpopulated) {
+      getCart();
+    }
+  }, [cart, getCart]);
 
   const [couponCode, setCouponCode] = useState('');
   const [couponLoading, setCouponLoading] = useState(false);
@@ -94,8 +105,8 @@ export default function CartPage() {
             {/* Cart Items List (8 cols) */}
             <div className="lg:col-span-8 space-y-3 sm:space-y-4">
               {cart.products.map((item) => {
-                const prod = item.product;
-                const prodId = prod?._id || item._id;
+                const prod = typeof item.product === 'object' && item.product !== null ? item.product : null;
+                const prodId = prod?._id || (typeof item.product === 'string' ? item.product : item._id);
                 return (
                   <div
                     key={item._id}
@@ -104,11 +115,14 @@ export default function CartPage() {
                     {/* Top Row on mobile: image + info */}
                     <div className="flex items-center space-x-3 sm:space-x-4 w-full sm:w-auto flex-1">
                       {/* Image */}
-                      <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl bg-gray-50 border border-gray-100 p-1.5 flex-shrink-0 flex items-center justify-center">
+                      <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl bg-gray-50 border border-gray-100 p-1.5 flex-shrink-0 flex items-center justify-center overflow-hidden">
                         <img
                           src={prod?.imageCover || '/placeholder.png'}
                           alt={prod?.title || 'Product'}
                           className="max-h-full max-w-full object-contain"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="%239ca3af" stroke-width="1.5"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>';
+                          }}
                         />
                       </div>
 
